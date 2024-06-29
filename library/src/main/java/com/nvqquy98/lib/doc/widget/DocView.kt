@@ -450,6 +450,10 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
         mDocWeb.loadUrl("$engineUrl${URLEncoder.encode(url, "UTF-8")}")
     }
 
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        return setInterceptTouchEventListener?.invoke(ev) ?: super.onInterceptTouchEvent(ev)
+    }
+
     override fun getDownloadContext() = context
 
     override fun onDownloadStart() {
