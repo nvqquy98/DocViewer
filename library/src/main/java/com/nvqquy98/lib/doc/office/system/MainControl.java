@@ -115,9 +115,9 @@ public class MainControl extends AbstractControl {
                     case MainConstant.HANDLER_MESSAGE_SHOW_PROGRESS:
                         if (getMainFrame().isShowProgressBar()) {
                             post(() -> {
-                                progressDialog = ProgressDialog.show(getActivity(),
-                                        frame.getAppName(), frame.getLocalString("DIALOG_LOADING"),
-                                        false, false, null);
+//                                progressDialog = ProgressDialog.show(getActivity(),
+//                                        frame.getAppName(), frame.getLocalString("DIALOG_LOADING"),
+//                                        false, false, null);
                                 progressDialog.setOnKeyListener(onKeyListener);
                             });
                         } else {

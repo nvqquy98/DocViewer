@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.nvqquy98.lib.doc.R;
 import com.nvqquy98.lib.doc.util.WordConverter;
 
 import org.apache.commons.io.FileUtils;
@@ -113,8 +114,6 @@ public class PoiViewer {
         protected void onPostExecute(String returnString) {
             mProgressDialog.dismiss();
             if (TextUtils.isEmpty(returnString)) {
-                Toast.makeText(mContext, "文件打开失败", Toast.LENGTH_SHORT).show();
-                scanForActivity(mContext).finish();
                 return;
             }
             mWebView.loadUrl(returnString);

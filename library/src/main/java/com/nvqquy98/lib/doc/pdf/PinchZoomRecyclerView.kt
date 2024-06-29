@@ -27,6 +27,7 @@ import kotlin.math.min
 class PinchZoomRecyclerView : RecyclerView {
     companion object {
         private const val TAG = "PinchZoomRecyclerView"
+
         // constant
         private const val DEFAULT_SCALE_DURATION = 300
         private const val DEFAULT_SCALE_FACTOR = 1f
@@ -37,6 +38,7 @@ class PinchZoomRecyclerView : RecyclerView {
         private const val PROPERTY_TRANY = "tranY"
         private const val INVALID_TOUCH_POSITION = -1f
     }
+
     // touch detector
     var mScaleDetector: ScaleGestureDetector? = null
     var mGestureDetector: GestureDetectorCompat? = null
@@ -236,11 +238,11 @@ class PinchZoomRecyclerView : RecyclerView {
         return floatArrayOf(x, y)
     }
 
-    private fun zoom(startVal: Float, endVal: Float) {
+    fun zoom(startVal: Float, endVal: Float) {
         if (mScaleAnimator == null) {
             newZoomAnimation()
         }
-        if (mScaleAnimator!!.isRunning) {
+        if (mScaleAnimator?.isRunning == true) {
             return
         }
         // set Value
@@ -259,15 +261,15 @@ class PinchZoomRecyclerView : RecyclerView {
             .ofFloat(PROPERTY_TRANX, startTranX, endTranX)
         val tranYHolder = PropertyValuesHolder
             .ofFloat(PROPERTY_TRANY, startTranY, endTranY)
-        mScaleAnimator!!.setValues(scaleHolder, tranXHolder, tranYHolder)
-        mScaleAnimator!!.setDuration(mScaleDuration.toLong())
-        mScaleAnimator!!.start()
+        mScaleAnimator?.setValues(scaleHolder, tranXHolder, tranYHolder)
+        mScaleAnimator?.setDuration(mScaleDuration.toLong())
+        mScaleAnimator?.start()
     }
 
     private fun newZoomAnimation() {
         mScaleAnimator = ValueAnimator()
-        mScaleAnimator!!.interpolator = DecelerateInterpolator()
-        mScaleAnimator!!.addUpdateListener { animation -> // update scaleFactor & tranX & tranY
+        mScaleAnimator?.interpolator = DecelerateInterpolator()
+        mScaleAnimator?.addUpdateListener { animation -> // update scaleFactor & tranX & tranY
             mScaleFactor = animation.getAnimatedValue(PROPERTY_SCALE) as Float
             setTranslateXY(
                 animation.getAnimatedValue(PROPERTY_TRANX) as Float,
@@ -276,7 +278,7 @@ class PinchZoomRecyclerView : RecyclerView {
             invalidate()
         }
         // set listener to update scale flag
-        mScaleAnimator!!.addListener(object : AnimatorListenerAdapter() {
+        mScaleAnimator?.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {
                 isScaling = true
             }
