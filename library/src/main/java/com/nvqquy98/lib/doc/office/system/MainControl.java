@@ -118,7 +118,7 @@ public class MainControl extends AbstractControl {
 //                                progressDialog = ProgressDialog.show(getActivity(),
 //                                        frame.getAppName(), frame.getLocalString("DIALOG_LOADING"),
 //                                        false, false, null);
-                                progressDialog.setOnKeyListener(onKeyListener);
+//                                progressDialog.setOnKeyListener(onKeyListener);
                             });
                         } else {
                             if (customDialog != null) {

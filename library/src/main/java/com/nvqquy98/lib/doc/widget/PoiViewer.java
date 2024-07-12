@@ -10,11 +10,9 @@ import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.nvqquy98.lib.doc.R;
 import com.nvqquy98.lib.doc.util.WordConverter;
 
 import org.apache.commons.io.FileUtils;
@@ -43,8 +41,8 @@ public class PoiViewer {
     }
 
     private void initView() {
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setMessage("正在加载文件...");
+//        mProgressDialog = new ProgressDialog(mContext);
+//        mProgressDialog.setMessage("正在加载文件...");
         // 初始化网页
         mWebView = new WebView(mContext);
         mWebView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -75,7 +73,7 @@ public class PoiViewer {
         mRootView = fileLayout;
         mFilePath = filePath;
         mFileExt = filePath.substring(filePath.lastIndexOf("."));
-        mProgressDialog.show();
+//        mProgressDialog.show();
         new ConvertTask().execute(filePath);
     }
 
@@ -112,12 +110,18 @@ public class PoiViewer {
 
         @Override
         protected void onPostExecute(String returnString) {
-            mProgressDialog.dismiss();
-            if (TextUtils.isEmpty(returnString)) {
-                return;
+//            mProgressDialog.dismiss();
+            try {
+                if (TextUtils.isEmpty(returnString)) {
+                    return;
+                }
+                mWebView.loadUrl(returnString);
+                if (mWebView != null) {
+                    mRootView.removeView(mWebView);
+                    mRootView.addView(mWebView);
+                }
+            } catch (Exception ignored) {
             }
-            mWebView.loadUrl(returnString);
-            mRootView.addView(mWebView);
         }
     }
 

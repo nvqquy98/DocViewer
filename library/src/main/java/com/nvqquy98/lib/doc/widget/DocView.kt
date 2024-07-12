@@ -304,7 +304,7 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
                     mPoiViewer?.loadFile(mFlDocContainer, sourceFilePath)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Toast.makeText(context, R.string.open_failed, Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(context, R.string.open_failed, Toast.LENGTH_SHORT).show()
                 }
             }
 

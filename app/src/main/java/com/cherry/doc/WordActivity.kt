@@ -31,7 +31,7 @@ class WordActivity : AppCompatActivity() {
         try {
             mPoiViewer?.loadFile(mFlDocContainer, sourceFilePath)
         } catch (e: java.lang.Exception) {
-            Toast.makeText(this, "打开失败", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "打开失败", Toast.LENGTH_SHORT).show()
         }
     }
 }

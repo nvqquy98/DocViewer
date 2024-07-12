@@ -18,8 +18,8 @@
     <string name="sys_menu_update">Update</string>
     <string name="sys_menu_help">Help</string>
     <string name="sys_menu_about">About</string>
-    <string name="sys_url_wxiwei">https://my.oschina.net/wxiwei</string>
-    <string name="sys_url_internet_search">http://www.baidu.com</string>
+    <string name="sys_url_wxiwei">http://www.google.com</string>
+    <string name="sys_url_internet_search">http://www.google.com</string>
     <string name="sys_search_hint">Search for files</string>
     <string name="sys_no_match">No matches.</string>
     <string name="sys_share_title">Sending mail…</string>
