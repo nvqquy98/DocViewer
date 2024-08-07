@@ -23,6 +23,7 @@ import java.util.Vector;
 import com.nvqquy98.lib.doc.office.fc.hslf.model.textproperties.AutoNumberTextProp;
 import com.nvqquy98.lib.doc.office.fc.hslf.model.textproperties.TextPropCollection;
 import com.nvqquy98.lib.doc.office.fc.hslf.record.*;
+import com.nvqquy98.lib.doc.office.fc.hslf.record.Record;
 import com.nvqquy98.lib.doc.office.fc.hslf.usermodel.RichTextRun;
 import com.nvqquy98.lib.doc.office.fc.hslf.usermodel.SlideShow;
 import com.nvqquy98.lib.doc.office.fc.util.StringUtil;
@@ -885,7 +886,7 @@ public final class TextRun
     
     /**
      * charcater startoffset
-     * @param charcterIndex
+     * @param characterIndex
      * @return
      */
     public int getAutoNumberIndex(int characterIndex)

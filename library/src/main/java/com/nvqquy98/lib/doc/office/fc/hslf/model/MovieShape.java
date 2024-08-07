@@ -19,6 +19,7 @@ package com.nvqquy98.lib.doc.office.fc.hslf.model;
 
 import com.nvqquy98.lib.doc.office.fc.ddf.EscherContainerRecord;
 import com.nvqquy98.lib.doc.office.fc.hslf.record.*;
+import com.nvqquy98.lib.doc.office.fc.hslf.record.Record;
 import com.nvqquy98.lib.doc.office.fc.hslf.usermodel.SlideShow;
 
 

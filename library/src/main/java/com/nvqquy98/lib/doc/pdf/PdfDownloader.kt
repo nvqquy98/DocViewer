@@ -1,5 +1,7 @@
 package com.nvqquy98.lib.doc.pdf
 
+import android.annotation.SuppressLint
+import com.nvqquy98.lib.doc.DocViewerLib
 import com.nvqquy98.lib.doc.interfaces.OnDownloadListener
 import com.nvqquy98.lib.doc.util.FileUtils
 import kotlinx.coroutines.Dispatchers
@@ -7,6 +9,8 @@ import kotlinx.coroutines.launch
 import java.io.BufferedInputStream
 import java.io.File
 import java.net.URL
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.HttpsURLConnection
 
 /*
  * -----------------------------------------------------------------
@@ -18,6 +22,7 @@ import java.net.URL
  * Description: 
  * -----------------------------------------------------------------
  */
+const val OK_HOSTNAME_VERIFIER_CLASS = "com.android.okhttp.internal.tls.OkHostnameVerifier";
 
 internal class PdfDownloader(url: String, private val listener: OnDownloadListener) {
 
@@ -25,8 +30,9 @@ internal class PdfDownloader(url: String, private val listener: OnDownloadListen
         listener.getCoroutineScope().launch(Dispatchers.IO) { download(url) }
     }
 
+    @SuppressLint("PrivateApi")
     private fun download(downloadUrl: String) {
-        var format = FileUtils.getFileFormatForUrl(downloadUrl)
+        val format = FileUtils.getFileFormatForUrl(downloadUrl)
         listener.getCoroutineScope().launch(Dispatchers.Main) { listener.onDownloadStart() }
         val outputFile = File(listener.getDownloadContext().cacheDir, "doc.$format")
         if (outputFile.exists())
@@ -34,10 +40,19 @@ internal class PdfDownloader(url: String, private val listener: OnDownloadListen
         try {
             val bufferSize = 8192
             val url = URL(downloadUrl)
-            val connection = url.openConnection()
-            connection.connect()
+            val connection = url.openConnection() as? HttpsURLConnection
+            DocViewerLib.sslSocketFactory?.let {
+                connection?.sslSocketFactory = DocViewerLib.sslSocketFactory
+                connection?.setHostnameVerifier { hostname, session ->
+                    DocViewerLib.hostnameVerifier?.verify(hostname, session) ?: (Class.forName(
+                        OK_HOSTNAME_VERIFIER_CLASS
+                    ).getField("INSTANCE")[null] as? HostnameVerifier)?.verify(hostname, session)
+                    ?: false
+                }
+            }
+            connection?.connect()
 
-            val totalLength = connection.contentLength
+            val totalLength = connection?.contentLength ?: 0
             val inputStream = BufferedInputStream(url.openStream(), bufferSize)
             val outputStream = outputFile.outputStream()
             var downloaded = 0
@@ -63,6 +78,7 @@ internal class PdfDownloader(url: String, private val listener: OnDownloadListen
             listener.getCoroutineScope().launch(Dispatchers.Main) { listener.onError(e) }
             return
         }
-        listener.getCoroutineScope().launch(Dispatchers.Main) { listener.onDownloadSuccess(outputFile.absolutePath) }
+        listener.getCoroutineScope()
+            .launch(Dispatchers.Main) { listener.onDownloadSuccess(outputFile.absolutePath) }
     }
 }
