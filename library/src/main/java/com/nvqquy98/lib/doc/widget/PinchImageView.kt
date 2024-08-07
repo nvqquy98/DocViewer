@@ -27,7 +27,7 @@ import java.util.*
  * -----------------------------------------------------------------
  */
 
-class PinchImageView: AppCompatImageView {
+class PinchImageView : AppCompatImageView {
     companion object {
         ////////////////////////////////配置参数////////////////////////////////
         /**
@@ -158,7 +158,12 @@ class PinchImageView: AppCompatImageView {
         }
         if (isReady()) {
             //原图大小
-            val tempSrc = MathUtils.rectFTake(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
+            val tempSrc = MathUtils.rectFTake(
+                0f,
+                0f,
+                drawable.intrinsicWidth.toFloat(),
+                drawable.intrinsicHeight.toFloat()
+            )
             //控件大小
             val tempDst = MathUtils.rectFTake(0f, 0f, width.toFloat(), height.toFloat())
             //计算fit center矩阵
@@ -557,14 +562,19 @@ class PinchImageView: AppCompatImageView {
     }
 
     ////////////////////////////////初始化////////////////////////////////
-    constructor(context: Context) :super(context) {
-        initView()
-    }
-    constructor(context: Context,attrs: AttributeSet?) :super(context,attrs) {
+    constructor(context: Context) : super(context) {
         initView()
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyle: Int): super(context, attrs, defStyle) {
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        initView()
+    }
+
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
+        context,
+        attrs,
+        defStyle
+    ) {
         initView()
     }
 
@@ -622,7 +632,8 @@ class PinchImageView: AppCompatImageView {
      *
      * 将mask从一个rect动画到另外一个rect
      */
-    private inner class MaskAnimator(start: RectF, end: RectF, duration: Long) : ValueAnimator(), AnimatorUpdateListener {
+    private inner class MaskAnimator(start: RectF, end: RectF, duration: Long) : ValueAnimator(),
+        AnimatorUpdateListener {
         /**
          * 开始mask
          */
@@ -742,38 +753,44 @@ class PinchImageView: AppCompatImageView {
      *
      * 在onTouchEvent末尾被执行.
      */
-    private val mGestureDetector = GestureDetector(this@PinchImageView.getContext(), object : SimpleOnGestureListener() {
-        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-            //只有在单指模式结束之后才允许执行fling
-            if (mPinchMode == PINCH_MODE_FREE && !(mScaleAnimator != null && mScaleAnimator!!.isRunning)) {
-                fling(velocityX, velocityY)
+    private val mGestureDetector =
+        GestureDetector(this@PinchImageView.getContext(), object : SimpleOnGestureListener() {
+            override fun onFling(
+                e1: MotionEvent?,
+                e2: MotionEvent,
+                velocityX: Float,
+                velocityY: Float
+            ): Boolean {
+                //只有在单指模式结束之后才允许执行fling
+                if (mPinchMode == PINCH_MODE_FREE && !(mScaleAnimator != null && mScaleAnimator!!.isRunning)) {
+                    fling(velocityX, velocityY)
+                }
+                return true
             }
-            return true
-        }
 
-        override fun onLongPress(e: MotionEvent) {
-            //触发长按
-            if (mOnLongClickListener != null) {
-                mOnLongClickListener!!.onLongClick(this@PinchImageView)
+            override fun onLongPress(e: MotionEvent) {
+                //触发长按
+                if (mOnLongClickListener != null) {
+                    mOnLongClickListener!!.onLongClick(this@PinchImageView)
+                }
             }
-        }
 
-        override fun onDoubleTap(e: MotionEvent): Boolean {
-            //当手指快速第二次按下触发,此时必须是单指模式才允许执行doubleTap
-            if (mPinchMode == PINCH_MODE_SCROLL && !(mScaleAnimator != null && mScaleAnimator!!.isRunning)) {
-                doubleTap(e.x, e.y)
+            override fun onDoubleTap(e: MotionEvent): Boolean {
+                //当手指快速第二次按下触发,此时必须是单指模式才允许执行doubleTap
+                if (mPinchMode == PINCH_MODE_SCROLL && !(mScaleAnimator != null && mScaleAnimator!!.isRunning)) {
+                    doubleTap(e.x, e.y)
+                }
+                return true
             }
-            return true
-        }
 
-        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-            //触发点击
-            if (mOnClickListener != null) {
-                mOnClickListener!!.onClick(this@PinchImageView)
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                //触发点击
+                if (mOnClickListener != null) {
+                    mOnClickListener!!.onClick(this@PinchImageView)
+                }
+                return true
             }
-            return true
-        }
-    })
+        })
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         super.onTouchEvent(event)
@@ -830,9 +847,19 @@ class PinchImageView: AppCompatImageView {
                     //在缩放模式下移动
                 } else if (mPinchMode == PINCH_MODE_SCALE && event.pointerCount > 1) {
                     //两个缩放点间的距离
-                    val distance = MathUtils.getDistance(event.getX(0), event.getY(0), event.getX(1), event.getY(1))
+                    val distance = MathUtils.getDistance(
+                        event.getX(0),
+                        event.getY(0),
+                        event.getX(1),
+                        event.getY(1)
+                    )
                     //保存缩放点中点
-                    val lineCenter = MathUtils.getCenterPoint(event.getX(0), event.getY(0), event.getX(1), event.getY(1))
+                    val lineCenter = MathUtils.getCenterPoint(
+                        event.getX(0),
+                        event.getY(0),
+                        event.getX(1),
+                        event.getY(1)
+                    )
                     mLastMovePoint[lineCenter[0]] = lineCenter[1]
                     //处理缩放
                     scale(mScaleCenter, mScaleBase, distance, mLastMovePoint)
@@ -933,12 +960,14 @@ class PinchImageView: AppCompatImageView {
         //理论上图片应该是等比的,x和y方向比例相同
         //但是有可能外部设定了不规范的值.
         //但是后续的scale操作会将xy不等的缩放值纠正,改成和x方向相同
-        mScaleBase = MathUtils.getMatrixScale(mOuterMatrix)[0] / MathUtils.getDistance(x1, y1, x2, y2)
+        mScaleBase =
+            MathUtils.getMatrixScale(mOuterMatrix)[0] / MathUtils.getDistance(x1, y1, x2, y2)
         //两手指的中点在屏幕上落在了图片的某个点上,图片上的这个点在经过总矩阵变换后和手指中点相同
         //现在我们需要得到图片上这个点在图片是fit center状态下在屏幕上的位置
         //因为后续的计算都是基于图片是fit center状态下进行变换
         //所以需要把两手指中点除以外层变换矩阵得到mScaleCenter
-        val center = MathUtils.inverseMatrixPoint(MathUtils.getCenterPoint(x1, y1, x2, y2), mOuterMatrix)
+        val center =
+            MathUtils.inverseMatrixPoint(MathUtils.getCenterPoint(x1, y1, x2, y2), mOuterMatrix)
         mScaleCenter[center[0]] = center[1]
     }
 
@@ -1020,7 +1049,12 @@ class PinchImageView: AppCompatImageView {
         //得到放大之后的图片方框
         val testMatrix = MathUtils.matrixTake(innerMatrix)
         testMatrix.postConcat(animEnd)
-        val testBound = MathUtils.rectFTake(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
+        val testBound = MathUtils.rectFTake(
+            0f,
+            0f,
+            drawable.intrinsicWidth.toFloat(),
+            drawable.intrinsicHeight.toFloat()
+        )
         testMatrix.mapRect(testBound)
         //修正位置
         var postX = 0f
@@ -1097,7 +1131,12 @@ class PinchImageView: AppCompatImageView {
         //尝试根据缩放点进行缩放修正
         val testMatrix = MathUtils.matrixTake(currentMatrix)
         testMatrix.postScale(scalePost, scalePost, mLastMovePoint.x, mLastMovePoint.y)
-        val testBound = MathUtils.rectFTake(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
+        val testBound = MathUtils.rectFTake(
+            0f,
+            0f,
+            drawable.intrinsicWidth.toFloat(),
+            drawable.intrinsicHeight.toFloat()
+        )
         //获取缩放修正后的图片方框
         testMatrix.mapRect(testBound)
         //检测缩放修正后位置有无超出，如果超出进行位置修正
@@ -1182,7 +1221,8 @@ class PinchImageView: AppCompatImageView {
      * 速度逐渐衰减,每帧速度衰减为原来的FLING_DAMPING_FACTOR,当速度衰减到小于1时停止.
      * 当图片不能移动时,动画停止.
      */
-    private inner class FlingAnimator(vectorX: Float, vectorY: Float) : ValueAnimator(), AnimatorUpdateListener {
+    private inner class FlingAnimator(vectorX: Float, vectorY: Float) : ValueAnimator(),
+        AnimatorUpdateListener {
         /**
          * 速度向量
          */
@@ -1220,7 +1260,11 @@ class PinchImageView: AppCompatImageView {
      *
      * 在给定时间内从一个矩阵的变化逐渐动画到另一个矩阵的变化
      */
-    private inner class ScaleAnimator @JvmOverloads constructor(start: Matrix, end: Matrix, duration: Long = SCALE_ANIMATOR_DURATION.toLong()) : ValueAnimator(), AnimatorUpdateListener {
+    private inner class ScaleAnimator @JvmOverloads constructor(
+        start: Matrix,
+        end: Matrix,
+        duration: Long = SCALE_ANIMATOR_DURATION.toLong()
+    ) : ValueAnimator(), AnimatorUpdateListener {
         /**
          * 开始矩阵
          */
@@ -1284,10 +1328,11 @@ class PinchImageView: AppCompatImageView {
      * @param <T> 对象池容纳的对象类型
     </T> */
     private abstract class ObjectsPool<T>(
-            /**
-             * 对象池的最大容量
-             */
-            private val mSize: Int) {
+        /**
+         * 对象池的最大容量
+         */
+        private val mSize: Int
+    ) {
 
         /**
          * 对象池队列
@@ -1566,7 +1611,13 @@ class PinchImageView: AppCompatImageView {
          * @param scaleType 图片在ImageView中的ScaleType
          * @param result 图片应该在ImageView中展示的矩形
          */
-        fun calculateScaledRectInContainer(container: RectF?, srcWidth: Float, srcHeight: Float, scale: ScaleType?, result: RectF?) {
+        fun calculateScaledRectInContainer(
+            container: RectF?,
+            srcWidth: Float,
+            srcHeight: Float,
+            scale: ScaleType?,
+            result: RectF?
+        ) {
             var scaleType = scale
             if (container == null || result == null) {
                 return
@@ -1584,7 +1635,10 @@ class PinchImageView: AppCompatImageView {
             } else if (ScaleType.CENTER == scaleType) {
                 val matrix = matrixTake()
                 val rect = rectFTake(0f, 0f, srcWidth, srcHeight)
-                matrix.setTranslate((container.width() - srcWidth) * 0.5f, (container.height() - srcHeight) * 0.5f)
+                matrix.setTranslate(
+                    (container.width() - srcWidth) * 0.5f,
+                    (container.height() - srcHeight) * 0.5f
+                )
                 matrix.mapRect(result, rect)
                 rectFGiven(rect)
                 matrixGiven(matrix)

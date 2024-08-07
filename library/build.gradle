@@ -7,11 +7,11 @@ plugins {
 
 android {
     namespace 'com.nvqquy98.lib.doc'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
-        minSdk 21
-        targetSdk 33
+        minSdk 26
+        targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -65,7 +65,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.nvqquy98'
                 artifactId = 'nvqquy98'
-                version = '0.0.4'
+                version = '0.0.5'
             }
         }
     }
