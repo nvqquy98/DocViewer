@@ -53,7 +53,7 @@ internal class PdfDownloader(url: String, private val listener: OnDownloadListen
             connection?.connect()
 
             val totalLength = connection?.contentLength ?: 0
-            val inputStream = BufferedInputStream(url.openStream(), bufferSize)
+            val inputStream = BufferedInputStream(connection?.inputStream, bufferSize)
             val outputStream = outputFile.outputStream()
             var downloaded = 0
 
