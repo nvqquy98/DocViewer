@@ -205,10 +205,7 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
             sourceFilePath = null
         }
         if (docSourceType == DocSourceType.URL && fileType != FileType.IMAGE) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-                || engine == DocEngine.MICROSOFT
-                || engine == DocEngine.XDOC
-                || engine == DocEngine.GOOGLE
+            if (engine == DocEngine.MICROSOFT || engine == DocEngine.XDOC || engine == DocEngine.GOOGLE
             ) {
                 showByWeb(docUrl ?: "", engine)
                 return
@@ -222,6 +219,15 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
             type = fileType
         }
         when (type) {
+            FileType.HTML -> {
+                Timber.e(TAG, "openDoc()......PDF")
+                mDocWeb.show()
+                mFlDocContainer.hide()
+                mRvPdf.hide()
+                mIvImage.hide()
+                mDocWeb.loadUrl(docUrl.orEmpty())
+            }
+
             FileType.PDF -> {
                 Timber.e(TAG, "openDoc()......PDF")
                 mDocWeb.hide()
@@ -276,7 +282,13 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
         }
     }
 
-    fun showDoc(activity: Activity, mDocContainer: ViewGroup?, url: String?, docSourceType: Int, fileType: Int) {
+    fun showDoc(
+        activity: Activity,
+        mDocContainer: ViewGroup?,
+        url: String?,
+        docSourceType: Int,
+        fileType: Int
+    ) {
         Timber.e(TAG, "showDoc()......")
         var iOffice: IOffice = object : IOffice() {
             override fun getActivity(): Activity {

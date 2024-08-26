@@ -29,6 +29,7 @@ object FileUtils {
     const val xlsxRe = "xlsx$"
     const val pptRe = "ppt$"
     const val pptxRe = "pptx$"
+    const val htmlRe = "(?:html|htm)$"
     val internalCacheDir: File
         get() = File(internalCacheDirPath).apply {
             if (!exists()) {
@@ -106,6 +107,7 @@ object FileUtils {
             xlsxRe.toRegex().containsMatchIn(str) -> FileType.XLSX
             pptRe.toRegex().containsMatchIn(str) -> FileType.PPT
             pptxRe.toRegex().containsMatchIn(str) -> FileType.PPTX
+            htmlRe.toRegex().containsMatchIn(str) -> FileType.HTML
             else -> FileType.NOT_SUPPORT
         }
     }
@@ -122,6 +124,7 @@ object FileUtils {
             xlsxRe.toRegex().containsMatchIn(str) -> "xlsx"
             pptRe.toRegex().containsMatchIn(str) -> "ppt"
             pptxRe.toRegex().containsMatchIn(str) -> "pptx"
+            htmlRe.toRegex().containsMatchIn(str) -> "html"
             else -> "unknown"
         }
     }

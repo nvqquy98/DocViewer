@@ -8,5 +8,6 @@ enum class DocEngine(val value: Int) {
     INTERNAL(100),
     MICROSOFT(200),
     XDOC(300),
-    GOOGLE(400)
+    GOOGLE(400),
+    HTML(500)
 }
