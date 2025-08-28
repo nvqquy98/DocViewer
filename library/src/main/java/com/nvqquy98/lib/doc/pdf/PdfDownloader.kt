@@ -24,7 +24,7 @@ import javax.net.ssl.HttpsURLConnection
  */
 const val OK_HOSTNAME_VERIFIER_CLASS = "com.android.okhttp.internal.tls.OkHostnameVerifier";
 
-open class PdfDownloader(url: String, private val listener: OnDownloadListener,private val mimeType: String = "", ) {
+open class PdfDownloader(url: String, private val listener: OnDownloadListener, private val mimeType: String = "") {
 
     init {
         listener.getCoroutineScope().launch(Dispatchers.IO) { download(url) }
@@ -32,7 +32,7 @@ open class PdfDownloader(url: String, private val listener: OnDownloadListener,p
 
     @SuppressLint("PrivateApi")
     private fun download(downloadUrl: String) {
-        val format = FileUtils.getFileFormatForUrl(downloadUrl)
+        val format = FileUtils.getFileFormatForUrl(runCatching { URL(downloadUrl).path }.getOrNull().orEmpty().ifBlank { downloadUrl })
         listener.getCoroutineScope().launch(Dispatchers.Main) { listener.onDownloadStart() }
         val outputFile = File(listener.getDownloadContext().cacheDir, "doc.${if (mimeType.isNotBlank()) mimeType else format}")
         if (outputFile.exists())

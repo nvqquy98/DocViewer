@@ -20,9 +20,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * 默认缩放比只能为1
- * 缩放动画时长暂时没有根据缩放比例改动
- */
+     * The default scale ratio can only be 1
+     * The duration of the zoom animation is not currently adjusted according to the zoom ratio
+     */
 @SuppressLint("ClickableViewAccessibility")
 class PinchZoomRecyclerView : RecyclerView {
     companion object {
@@ -44,33 +44,33 @@ class PinchZoomRecyclerView : RecyclerView {
     var mGestureDetector: GestureDetectorCompat? = null
 
     // draw param
-    var mViewWidth: Float = 0f // 宽度
-    var mViewHeight: Float = 0f // 高度
-    var mTranX: Float = 0f // x偏移量
-    var mTranY: Float = 0f // y偏移量
-    var mScaleFactor: Float = 0f // 缩放系数
+    var mViewWidth: Float = 0f // Width
+    var mViewHeight: Float = 0f // Height
+    var mTranX: Float = 0f // X offset
+    var mTranY: Float = 0f // Y offset
+    var mScaleFactor: Float = 0f // Scale factor
 
     // touch param
-    var mActivePointerId: Int = MotionEvent.INVALID_POINTER_ID // 有效的手指id
-    var mLastTouchX: Float = 0f // 上一次触摸位置 X
-    var mLastTouchY: Float = 0f // 上一次触摸位置 Y
+    var mActivePointerId: Int = MotionEvent.INVALID_POINTER_ID // Valid finger id
+    var mLastTouchX: Float = 0f // Last touch position X
+    var mLastTouchY: Float = 0f // Last touch position Y
 
     // control param
-    var isScaling: Boolean = false // 是否正在缩放
-    private var mIsEnableScaled: Boolean = false // 是否支持缩放
+    var isScaling: Boolean = false // Is scaling
+    private var mIsEnableScaled: Boolean = false // Is scaling supported
 
     // zoom param
-    var mScaleAnimator: ValueAnimator? = null // 缩放动画
-    var mScaleCenterX: Float = 0f // 缩放中心 X
-    var mScaleCenterY: Float = 0f // 缩放中心 Y
-    var mMaxTranX: Float = 0f // 当前缩放系数下最大的X偏移量
-    var mMaxTranY: Float = 0f // 当前缩放系数下最大的Y偏移量
+    var mScaleAnimator: ValueAnimator? = null // Scale animation
+    var mScaleCenterX: Float = 0f // Scale center X
+    var mScaleCenterY: Float = 0f // Scale center Y
+    var mMaxTranX: Float = 0f // Maximum X offset at current scale factor
+    var mMaxTranY: Float = 0f // Maximum Y offset at current scale factor
 
     // config param
-    var mMaxScaleFactor: Float = 0f // 最大缩放系数
-    var mMinScaleFactor: Float = 0f // 最小缩放系数
-    var mDefaultScaleFactor: Float = 0f // 默认缩放系数 双击缩小后的缩放系数 暂不支持小于1
-    var mScaleDuration: Int = 0 // 缩放时间 ms
+    var mMaxScaleFactor: Float = 0f // Maximum scale factor
+    var mMinScaleFactor: Float = 0f // Minimum scale factor
+    var mDefaultScaleFactor: Float = 0f // Default scale factor, scale after double-tap, not supporting less than 1 for now
+    var mScaleDuration: Int = 0 // Scale duration in ms
 
     constructor(context: Context?) : super(context!!) {
         init(null)
@@ -103,7 +103,7 @@ class PinchZoomRecyclerView : RecyclerView {
             )
             a.recycle()
         } else {
-            // init param with default
+            // Initialize parameters with default values
             mMaxScaleFactor = DEFAULT_MAX_SCALE_FACTOR
             mMinScaleFactor = DEFAULT_MIN_SCALE_FACTOR
             mDefaultScaleFactor = DEFAULT_SCALE_FACTOR
@@ -147,7 +147,7 @@ class PinchZoomRecyclerView : RecyclerView {
                     val pointerIndex = ev.findPointerIndex(mActivePointerId)
                     val x = ev.getX(pointerIndex)
                     val y = ev.getY(pointerIndex)
-                    if (!isScaling && mScaleFactor > 1) { // 缩放时不做处理
+                    if (!isScaling && mScaleFactor > 1) { // Do not handle during scaling
                         // Calculate the distance moved
                         val dx = x - mLastTouchX
                         val dy = y - mLastTouchY
@@ -161,7 +161,7 @@ class PinchZoomRecyclerView : RecyclerView {
                 } catch (e: Exception) {
                     val x = ev.x
                     val y = ev.y
-                    if (!isScaling && mScaleFactor > 1 && mLastTouchX != INVALID_TOUCH_POSITION) { // 缩放时不做处理
+                    if (!isScaling && mScaleFactor > 1 && mLastTouchX != INVALID_TOUCH_POSITION) { // Do not handle during scaling
                         // Calculate the distance moved
                         val dx = x - mLastTouchX
                         val dy = y - mLastTouchY
@@ -202,7 +202,7 @@ class PinchZoomRecyclerView : RecyclerView {
         canvas.save()
         canvas.translate(mTranX, mTranY)
         canvas.scale(mScaleFactor, mScaleFactor)
-        // 所有子view都会缩放和平移
+        // All child views will be scaled and translated
         super.dispatchDraw(canvas)
         canvas.restore()
     }
@@ -212,7 +212,7 @@ class PinchZoomRecyclerView : RecyclerView {
         mTranY = tranY
     }
 
-    // 当scale 大于 1 时修正action move的位置
+    // Correct the action move position when scale is greater than 1
     private fun correctTranslateXY() {
         val correctXY = correctTranslateXY(mTranX, mTranY)
         mTranX = correctXY[0]
@@ -269,7 +269,7 @@ class PinchZoomRecyclerView : RecyclerView {
     private fun newZoomAnimation() {
         mScaleAnimator = ValueAnimator()
         mScaleAnimator?.interpolator = DecelerateInterpolator()
-        mScaleAnimator?.addUpdateListener { animation -> // update scaleFactor & tranX & tranY
+        mScaleAnimator?.addUpdateListener { animation -> // Update scaleFactor, tranX, and tranY
             mScaleFactor = animation.getAnimatedValue(PROPERTY_SCALE) as Float
             setTranslateXY(
                 animation.getAnimatedValue(PROPERTY_TRANX) as Float,
@@ -277,7 +277,7 @@ class PinchZoomRecyclerView : RecyclerView {
             )
             invalidate()
         }
-        // set listener to update scale flag
+        // Set listener to update scaling flag
         mScaleAnimator?.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {
                 isScaling = true
@@ -302,7 +302,7 @@ class PinchZoomRecyclerView : RecyclerView {
         override fun onScale(detector: ScaleGestureDetector): Boolean {
             val mLastScale = mScaleFactor
             mScaleFactor *= detector.scaleFactor
-            // 修正scaleFactor
+            // Correct scaleFactor
             mScaleFactor =
                 max(mMinScaleFactor.toDouble(), min(mScaleFactor.toDouble(), mMaxScaleFactor.toDouble()))
                     .toFloat()
@@ -355,7 +355,7 @@ class PinchZoomRecyclerView : RecyclerView {
             return
         }
         this.mIsEnableScaled = enable
-        // 禁用了 恢复比例1
+        // Restore scale to 1 if disabled
         if (!mIsEnableScaled && mScaleFactor != 1f) {
             zoom(mScaleFactor, 1f)
         }

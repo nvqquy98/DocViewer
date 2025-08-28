@@ -20,22 +20,22 @@ object Constant {
     const val INTENT_POSITION_KEY = "INTENT_POSITION_KEY"
 
     /**
-     * Office 平台在线预览限制：
-     * Word 和 PowerPoint 文档必须小于 10 M，Excel 必须小于 5M;
-     * 文档支持的格式：
-     * Word: docx、dotx
-     * Excel：xlsx、xlsb、xls、xlsm
-     * PowerPoint: pptx、 ppsx、 ppt、 pps、 potx、 ppsm
+     * Office platform online preview limitations:
+     * Word and PowerPoint documents must be less than 10 MB, Excel must be less than 5 MB;
+     * Supported document formats:
+     * Word: docx, dotx
+     * Excel: xlsx, xlsb, xls, xlsm
+     * PowerPoint: pptx, ppsx, ppt, pps, potx, ppsm
      */
     const val MICROSOFT_URL = "https://view.officeapps.live.com/op/view.aspx?src="
 
     /**
-     * XDOC文档预览服务 支持pdf在线浏览
+     * XDOC document preview service supports online PDF viewing
      */
-    const val XDOC_VIEW_URL = "http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=true&_xdoc="
+    const val XDOC_VIEW_URL = "https://view.officeapps.live.com/op/view.aspx?src="
 
     /**
-     * google文档预览服务，科学上网
+     * Google document preview service, requires VPN
      */
     const val GOOGLE_URL = "https://drive.google.com/viewer/viewer?hl=en&embedded=true&url="
 }

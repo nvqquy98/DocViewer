@@ -42,7 +42,7 @@ object ViewUtils {
     }
 
     fun View.bitmap(): Bitmap {
-        //不加下面两句，会报错：width and height must be > 0
+        // Without the following two lines, an error will occur: width and height must be > 0
         measure(
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))

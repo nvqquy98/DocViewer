@@ -202,7 +202,7 @@ object FileUtils {
         val contentResolver = context.contentResolver
         var mimeType = contentResolver.getType(contentUri)
 
-        // 如果系统未能直接返回MIME类型，尝试通过文件扩展名推测
+        // If the system cannot directly return the MIME type, try to infer it from the file extension
         if (mimeType == null) {
             val extension = MimeTypeMap.getFileExtensionFromUrl(contentUri.toString())
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)

@@ -47,7 +47,7 @@ import android.graphics.Color;
  * <p>
  * 负责人:         jhy1790
  * <p>
- * 负责小组:         
+ * 负责小组:
  * <p>
  * <p>
  */
