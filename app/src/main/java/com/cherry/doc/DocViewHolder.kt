@@ -3,16 +3,9 @@ package com.cherry.doc
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.AdapterView.OnItemClickListener
-import androidx.core.content.res.ResourcesCompat
-import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.cherry.doc.data.DocGroupInfo
-import com.cherry.doc.data.DocInfo
-import com.nvqquy98.lib.doc.bean.FileType
-import com.nvqquy98.lib.doc.util.FileUtils
-import kotlinx.android.synthetic.main.rv_doc_cell.view.*
-import java.io.File
+import com.cherry.doc.databinding.RvDocCellBinding
 
 /*
  * -----------------------------------------------------------------
@@ -25,27 +18,26 @@ import java.io.File
  * -----------------------------------------------------------------
  */
 
-class DocViewHolder : RecyclerView.ViewHolder,OnClickListener {
+class DocViewHolder(private val binding: RvDocCellBinding) : RecyclerView.ViewHolder(binding.root), OnClickListener {
     var mOnItemClickListener: OnItemClickListener? = null
-    constructor(itemView: View) : super(itemView) {
-        itemView.setOnClickListener(this)
+
+    init {
+        binding.root.setOnClickListener(this)
     }
 
     fun bindData(data: DocGroupInfo?) {
-        itemView.mTvTypeName.text = data?.typeName
+        binding.mTvTypeName.text = data?.typeName
 
-//        itemView.mRvDocCell.onFlingListener = null
-//        LinearSnapHelper().attachToRecyclerView(itemView.mRvDocCell)
+//        binding.mRvDocCell.onFlingListener = null
+//        LinearSnapHelper().attachToRecyclerView(binding.mRvDocCell)
 
-        var cellAdapter = DocCellAdapter(itemView.context,mOnItemClickListener,
-            adapterPosition)
+        var cellAdapter = DocCellAdapter(binding.root.context, mOnItemClickListener, bindingAdapterPosition)
         cellAdapter.showDatas(data?.docList)
 
-        itemView.mRvDocCell.adapter = cellAdapter
+        binding.mRvDocCell.adapter = cellAdapter
     }
 
     override fun onClick(v: View?) {
-        mOnItemClickListener?.onItemClick(null,v,adapterPosition,0)
+        mOnItemClickListener?.onItemClick(null, v, bindingAdapterPosition, 0)
     }
-
 }

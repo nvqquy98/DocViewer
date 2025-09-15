@@ -8,11 +8,9 @@ import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.animation.LinearInterpolator
 import androidx.recyclerview.widget.RecyclerView
-import com.nvqquy98.lib.doc.R
+import com.nvqquy98.lib.doc.databinding.PageItemPdfBinding
 import com.nvqquy98.lib.doc.util.ViewUtils.hide
 import com.nvqquy98.lib.doc.util.ViewUtils.show
-import kotlinx.android.synthetic.main.page_item_pdf.view.*
-import kotlinx.android.synthetic.main.pdf_view_page_loading_layout.view.*
 
 /*
  * -----------------------------------------------------------------
@@ -29,14 +27,10 @@ internal class PdfPageViewAdapter(
     private val renderer: PdfRendererCore?,
     private val pageSpacing: Rect,
     private val enableLoadingForPages: Boolean
-) :
-    RecyclerView.Adapter<PdfPageViewAdapter.PdfPageViewHolder>() {
+) : RecyclerView.Adapter<PdfPageViewAdapter.PdfPageViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PdfPageViewHolder {
-        return PdfPageViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.page_item_pdf,parent,
-                false)
-        )
+        return PdfPageViewHolder(PageItemPdfBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     override fun getItemCount(): Int {
@@ -47,32 +41,33 @@ internal class PdfPageViewAdapter(
         holder.bindView()
     }
 
-    inner class PdfPageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),View.OnAttachStateChangeListener {
+    inner class PdfPageViewHolder(private val binding: PageItemPdfBinding) : RecyclerView.ViewHolder(binding.root),
+        View.OnAttachStateChangeListener {
+
+        init {
+            binding.root.addOnAttachStateChangeListener(this)
+        }
 
         fun bindView() {
         }
 
         private fun handleLoadingForPage(position: Int) {
             if (!enableLoadingForPages) {
-                itemView.pdf_view_page_loading_progress.hide()
+                binding.loadingView.root.hide()
                 return
             }
 
             if (renderer?.pageExistInCache(position) == true) {
-                itemView.pdf_view_page_loading_progress.hide()
+                binding.loadingView.root.hide()
             } else {
-                itemView.pdf_view_page_loading_progress.show()
+                binding.loadingView.root.show()
             }
         }
 
-        init {
-            itemView.addOnAttachStateChangeListener(this)
-        }
-
         override fun onViewAttachedToWindow(p0: View) {
-            handleLoadingForPage(adapterPosition)
-            renderer?.renderPage(adapterPosition) { bitmap: Bitmap?, pageNo: Int ->
-                if (pageNo == adapterPosition) {
+            handleLoadingForPage(bindingAdapterPosition)
+            renderer?.renderPage(bindingAdapterPosition) { bitmap: Bitmap?, pageNo: Int ->
+                if (pageNo == bindingAdapterPosition) {
                     bitmap?.let {
 //                        itemView.container_view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
 //                            height =
@@ -82,20 +77,20 @@ internal class PdfPageViewAdapter(
 //                            this.rightMargin = pageSpacing.right
 //                            this.bottomMargin = pageSpacing.bottom
 //                        }
-                        itemView.pageView.setImageBitmap(bitmap)
-                        itemView.pageView.animation = AlphaAnimation(0F, 1F).apply {
+                        binding.pageView.setImageBitmap(bitmap)
+                        binding.pageView.animation = AlphaAnimation(0F, 1F).apply {
                             interpolator = LinearInterpolator()
                             duration = 200
                         }
-                        itemView.pdf_view_page_loading_progress.hide()
+                        binding.loadingView.root.hide()
                     }
                 }
             }
         }
 
         override fun onViewDetachedFromWindow(p0: View) {
-            itemView.pageView.setImageBitmap(null)
-            itemView.pageView.clearAnimation()
+            binding.pageView.setImageBitmap(null)
+            binding.pageView.clearAnimation()
         }
     }
 }
