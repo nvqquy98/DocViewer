@@ -8,6 +8,7 @@ import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
 import com.cherry.doc.data.DocInfo
 import com.cherry.doc.R
+import com.cherry.doc.databinding.RvDocItemCellBinding
 
 /*
  * -----------------------------------------------------------------
@@ -20,10 +21,11 @@ import com.cherry.doc.R
  * -----------------------------------------------------------------
  */
 
-class DocCellAdapter(var context: Context,
-                     var listener: AdapterView.OnItemClickListener?,
-                     var parentPosition: Int)
-    : RecyclerView.Adapter<DocCellViewHolder>() {
+class DocCellAdapter(
+    var context: Context,
+    var listener: AdapterView.OnItemClickListener?,
+    var parentPosition: Int
+) : RecyclerView.Adapter<DocCellViewHolder>() {
 
     var datas = ArrayList<DocInfo>()
 
@@ -34,7 +36,7 @@ class DocCellAdapter(var context: Context,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocCellViewHolder {
-        return DocCellViewHolder(inflate(R.layout.rv_doc_item_cell,parent),parentPosition)
+        return DocCellViewHolder(RvDocItemCellBinding.inflate(LayoutInflater.from(context), parent, false), parentPosition)
     }
 
     override fun getItemCount(): Int {
@@ -44,10 +46,5 @@ class DocCellAdapter(var context: Context,
     override fun onBindViewHolder(holder: DocCellViewHolder, position: Int) {
         holder.mOnItemClickListener = listener
         holder.bindData(datas[position])
-    }
-
-    fun inflate(layoutId: Int,parent: ViewGroup): View {
-        var inflater = LayoutInflater.from(context)
-        return inflater.inflate(layoutId,parent, false)
     }
 }
