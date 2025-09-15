@@ -27,14 +27,13 @@ import com.cherry.permissions.lib.EasyPermissions.hasPermissions
 import com.cherry.permissions.lib.annotations.AfterPermissionGranted
 import com.cherry.permissions.lib.dialogs.SettingsDialog
 import com.cherry.doc.R
-import kotlinx.android.synthetic.main.activity_main.toolbar
-import kotlinx.android.synthetic.main.content_main.mRvDoc
+import com.cherry.doc.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class MainActivity : AppCompatActivity(),OnClickListener,OnItemClickListener,
+class MainActivity : AppCompatActivity(), OnClickListener, OnItemClickListener,
     EasyPermissions.PermissionCallbacks {
     companion object {
         const val REQUEST_CODE_STORAGE_PERMISSION = 124
@@ -42,16 +41,19 @@ class MainActivity : AppCompatActivity(),OnClickListener,OnItemClickListener,
         const val REQUEST_CODE_SELECT_DOCUMENT = 0x100
         const val TAG = "MainActivity"
     }
-    var url = "http://cdn07.foxitsoftware.cn/pub/foxit/manual/phantom/en_us/API%20Reference%20for%20Application%20Communication.pdf"
+
+    var url = "https://pdfobject.com/pdf/sample.pdf"
 //    var url = "https://xdts.xdocin.com/demo/resume3.docx"
 //    var url = "http://172.16.28.95:8080/data/test2.ppt"
 //    var url = "http://172.16.28.95:8080/data/testdocx.ll"
 
     var mDocAdapter: DocAdapter? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initView()
         initData()
@@ -118,13 +120,15 @@ class MainActivity : AppCompatActivity(),OnClickListener,OnItemClickListener,
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_assets -> {
-                openDoc("test.docx",DocSourceType.ASSETS)
+                openDoc("test.docx", DocSourceType.ASSETS)
                 return true
             }
+
             R.id.action_online -> {
-                openDoc(url,DocSourceType.URL,null)
+                openDoc(url, DocSourceType.URL, null)
                 return true
             }
+
             R.id.action_select -> {
                 // 使用Intent打开文件管理器并选择文档
 
@@ -135,14 +139,16 @@ class MainActivity : AppCompatActivity(),OnClickListener,OnItemClickListener,
                 startActivityForResult(intent, REQUEST_CODE_SELECT_DOCUMENT) // 启动Activity并设置请求码
                 return true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
-    fun initView() {
-        setSupportActionBar(toolbar)
 
-        mDocAdapter = DocAdapter(this,this)
-        mRvDoc.adapter = mDocAdapter
+    fun initView() {
+        setSupportActionBar(binding.toolbar)
+
+        mDocAdapter = DocAdapter(this, this)
+        binding.contentMain.mRvDoc.adapter = mDocAdapter
     }
 
     fun initData() {
@@ -157,15 +163,15 @@ class MainActivity : AppCompatActivity(),OnClickListener,OnItemClickListener,
 
     fun checkSupport(path: String): Boolean {
         var fileType = FileUtils.getFileTypeForUrl(path)
-        Log.e(javaClass.simpleName,"fileType = $fileType")
+        Log.e(javaClass.simpleName, "fileType = $fileType")
         if (fileType == FileType.NOT_SUPPORT) {
             return false
         }
         return true
     }
 
-    fun openDoc(path: String,docSourceType: Int,type: Int? = null) {
-        DocViewerActivity.launchDocViewer(this,docSourceType,path,type)
+    fun openDoc(path: String, docSourceType: Int, type: Int? = null) {
+        DocViewerActivity.launchDocViewer(this, docSourceType, path, type)
     }
 
     override fun onItemClick(p0: AdapterView<*>?, v: View?, position: Int, id: Long) {
@@ -175,7 +181,7 @@ class MainActivity : AppCompatActivity(),OnClickListener,OnItemClickListener,
                 val docInfo = groupInfo?.docList?.get(position)
                 var path = docInfo?.path ?: ""
                 if (checkSupport(path)) {
-                    openDoc(path,DocSourceType.PATH)
+                    openDoc(path, DocSourceType.PATH)
                 }
 
 //                word2Html(path)
@@ -189,7 +195,7 @@ class MainActivity : AppCompatActivity(),OnClickListener,OnItemClickListener,
             val htmlFilePath = cacheDir.absolutePath + "/html"
             val htmlFileName = "word_pdf"
 
-            var bs = BasicSet(this@MainActivity,sourceFilePath,htmlFilePath, htmlFileName)
+            var bs = BasicSet(this@MainActivity, sourceFilePath, htmlFilePath, htmlFileName)
             bs.picturePath = htmlFilePath
 
             WordUtils.getInstance(bs).word2html()
@@ -243,14 +249,16 @@ class MainActivity : AppCompatActivity(),OnClickListener,OnItemClickListener,
 
             val settingsDialogBuilder = SettingsDialog.Builder(this)
 
-            when(requestCode) {
+            when (requestCode) {
                 REQUEST_CODE_STORAGE_PERMISSION -> {
                     settingsDialogBuilder.title = getString(
                         com.cherry.permissions.lib.R.string.title_settings_dialog,
-                        "Storage Permission")
+                        "Storage Permission"
+                    )
                     settingsDialogBuilder.rationale = getString(
                         com.cherry.permissions.lib.R.string.rationale_ask_again,
-                        "Storage Permission")
+                        "Storage Permission"
+                    )
                 }
             }
 

@@ -8,13 +8,11 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Environment
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.webkit.*
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.nvqquy98.lib.doc.R
+import com.nvqquy98.lib.doc.databinding.DocWebViewBinding
 import com.nvqquy98.lib.doc.interfaces.OnWebLoadListener
-import kotlinx.android.synthetic.main.doc_web_view.view.*
 import timber.log.Timber
 
 /*
@@ -34,6 +32,7 @@ class DocWebView : ConstraintLayout, DownloadListener {
     var isError = false
     var openLinkBySysBrowser = false//是否使用系统浏览器打开http链接
     var mOnWebLoadListener: OnWebLoadListener? = null
+    private val binding = DocWebViewBinding.inflate(LayoutInflater.from(context), this, true)
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -42,24 +41,25 @@ class DocWebView : ConstraintLayout, DownloadListener {
     }
 
     fun initView() {
-        LayoutInflater.from(context).inflate(R.layout.doc_web_view, this, true)
-        mDocView.webChromeClient = DocWebChromeClient()
-        mDocView.webViewClient = DocWebViewClient()
-        mDocView.settings.setSupportZoom(true)
-        mDocView.settings.builtInZoomControls = true
-        mDocView.settings.displayZoomControls = true
-        mDocView.settings.useWideViewPort = true
-        mDocView.settings.loadWithOverviewMode = true
-        mDocView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+        with(binding) {
+            mDocView.webChromeClient = DocWebChromeClient()
+            mDocView.webViewClient = DocWebViewClient()
+            mDocView.settings.setSupportZoom(true)
+            mDocView.settings.builtInZoomControls = true
+            mDocView.settings.displayZoomControls = true
+            mDocView.settings.useWideViewPort = true
+            mDocView.settings.loadWithOverviewMode = true
+            mDocView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
 
-        mDocView.settings.javaScriptEnabled = true
-        mDocView.settings.domStorageEnabled = true
-        mDocView.settings.allowFileAccess = true
-        mDocView.settings.allowFileAccessFromFileURLs = true
-        mDocView.settings.allowUniversalAccessFromFileURLs = true
-        mDocView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
+            mDocView.settings.javaScriptEnabled = true
+            mDocView.settings.domStorageEnabled = true
+            mDocView.settings.allowFileAccess = true
+            mDocView.settings.allowFileAccessFromFileURLs = true
+            mDocView.settings.allowUniversalAccessFromFileURLs = true
+            mDocView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
 
-        mDocView.setDownloadListener(this)
+            mDocView.setDownloadListener(this@DocWebView)
+        }
     }
 
     private fun setProgress(newProgress: Int) {
@@ -73,25 +73,25 @@ class DocWebView : ConstraintLayout, DownloadListener {
 
     fun reload() {
         isError = false
-        mDocView.reload()
+        binding.mDocView.reload()
     }
 
     fun loadUrl(url: String) {
         isError = false
         try {
-            mDocView.loadUrl(url)
+            binding.mDocView.loadUrl(url)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     fun loadData(htmlData: String) {
-        mDocView.loadData(htmlData, "text/html", "utf-8")
+        binding.mDocView.loadData(htmlData, "text/html", "utf-8")
     }
 
     fun loadData(htmlData: String, secondLinkBySysBrowser: Boolean) {
         openLinkBySysBrowser = secondLinkBySysBrowser
-        mDocView.loadData(htmlData, "text/html", "utf-8")
+        binding.mDocView.loadData(htmlData, "text/html", "utf-8")
     }
 
     fun downloadFile(url: String?, contentDisposition: String?, mimeType: String?) {
@@ -106,7 +106,7 @@ class DocWebView : ConstraintLayout, DownloadListener {
         val fileName = URLUtil.guessFileName(url, contentDisposition, mimeType)
         Timber.e("downloadFile()-fileName = $fileName")
         request.setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory().toString() + "/Download/", fileName)
-        val downloadManager = mDocView.context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val downloadManager = binding.mDocView.context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val downloadId = downloadManager.enqueue(request)
     }
 
@@ -125,19 +125,19 @@ class DocWebView : ConstraintLayout, DownloadListener {
     }
 
     fun canGoBack(): Boolean {
-        val canGoBack = mDocView.canGoBack()
+        val canGoBack = binding.mDocView.canGoBack()
         if (canGoBack) {
-            mDocView.goBack()
+            binding.mDocView.goBack()
         }
         return canGoBack
     }
 
     fun onPause() {
-        mDocView.pauseTimers()
+        binding.mDocView.pauseTimers()
     }
 
     fun onResume() {
-        mDocView.resumeTimers()
+        binding.mDocView.resumeTimers()
     }
 
     /**
@@ -145,12 +145,12 @@ class DocWebView : ConstraintLayout, DownloadListener {
      */
     fun onDestroy() {
         try {
-            mDocView.clearHistory();
-            mDocView.clearCache(true)
-            mDocView.loadUrl("about:blank") // clearView() should be changed to loadUrl("about:blank"), since clearView() is deprecated now
-            mDocView.freeMemory()
-            mDocView.pauseTimers()
-            mDocView.destroy() // Note that mWebView.destroy() and mWebView = null do the exact same thing
+            binding.mDocView.clearHistory();
+            binding.mDocView.clearCache(true)
+            binding.mDocView.loadUrl("about:blank") // clearView() should be changed to loadUrl("about:blank"), since clearView() is deprecated now
+            binding.mDocView.freeMemory()
+            binding.mDocView.pauseTimers()
+            binding.mDocView.destroy() // Note that mWebView.destroy() and mWebView = null do the exact same thing
         } catch (e: Exception) {
             e.printStackTrace()
         }

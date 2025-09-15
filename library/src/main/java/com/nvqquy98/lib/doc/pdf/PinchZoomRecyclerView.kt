@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nvqquy98.lib.doc.R
 import kotlin.math.max
 import kotlin.math.min
+import androidx.core.content.withStyledAttributes
 
 /**
      * The default scale ratio can only be 1
@@ -88,20 +89,20 @@ class PinchZoomRecyclerView : RecyclerView {
         mScaleDetector = ScaleGestureDetector(context, ScaleListener())
         mGestureDetector = GestureDetectorCompat(context, GestureListener())
         if (attr != null) {
-            val a = context
-                .obtainStyledAttributes(attr, R.styleable.ZoomRecyclerView, 0, 0)
-            mMinScaleFactor =
-                a.getFloat(R.styleable.ZoomRecyclerView_min_scale, DEFAULT_MIN_SCALE_FACTOR)
-            mMaxScaleFactor =
-                a.getFloat(R.styleable.ZoomRecyclerView_max_scale, DEFAULT_MAX_SCALE_FACTOR)
-            mDefaultScaleFactor = a
-                .getFloat(R.styleable.ZoomRecyclerView_default_scale, DEFAULT_SCALE_FACTOR)
-            mScaleFactor = mDefaultScaleFactor
-            mScaleDuration = a.getInteger(
-                R.styleable.ZoomRecyclerView_zoom_duration,
-                DEFAULT_SCALE_DURATION
-            )
-            a.recycle()
+            context
+                .withStyledAttributes(attr, R.styleable.ZoomRecyclerView, 0, 0) {
+                    mMinScaleFactor =
+                        getFloat(R.styleable.ZoomRecyclerView_min_scale, DEFAULT_MIN_SCALE_FACTOR)
+                    mMaxScaleFactor =
+                        getFloat(R.styleable.ZoomRecyclerView_max_scale, DEFAULT_MAX_SCALE_FACTOR)
+                    mDefaultScaleFactor = this
+                        .getFloat(R.styleable.ZoomRecyclerView_default_scale, DEFAULT_SCALE_FACTOR)
+                    mScaleFactor = mDefaultScaleFactor
+                    mScaleDuration = getInteger(
+                        R.styleable.ZoomRecyclerView_zoom_duration,
+                        DEFAULT_SCALE_DURATION
+                    )
+                }
         } else {
             // Initialize parameters with default values
             mMaxScaleFactor = DEFAULT_MAX_SCALE_FACTOR

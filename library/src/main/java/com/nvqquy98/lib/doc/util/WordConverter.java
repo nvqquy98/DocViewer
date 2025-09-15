@@ -2,11 +2,9 @@ package com.nvqquy98.lib.doc.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.util.Xml;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.CharacterRun;
 import org.apache.poi.hwpf.usermodel.Paragraph;
@@ -17,6 +15,8 @@ import org.apache.poi.hwpf.usermodel.TableCell;
 import org.apache.poi.hwpf.usermodel.TableIterator;
 import org.apache.poi.hwpf.usermodel.TableRow;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -375,10 +375,10 @@ public class WordConverter {
 
     private static Object getCellValue(HSSFCell cell) throws IOException {
         Object value = "";
-        if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+        if (cell.getCellType() == CellType.STRING) {
             value = cell.getRichStringCellValue().toString();
-        } else if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
-            if (HSSFDateUtil.isCellDateFormatted(cell)) {
+        } else if (cell.getCellType() == CellType.NUMERIC) {
+            if (DateUtil.isCellDateFormatted(cell)) {
                 Date date = (Date) cell.getDateCellValue();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 value = sdf.format(date);
@@ -393,7 +393,7 @@ public class WordConverter {
 
             }
         }
-        if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
+        if (cell.getCellType() == CellType.BLANK) {
             value = "";
         }
         return value;
