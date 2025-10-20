@@ -586,4 +586,15 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
         closePdfRender()
         mOnDocPageChangeListener = null
     }
+
+    fun deleteFileByPath(): Boolean {
+        return runCatching {
+            val file = File(sourceFilePath.orEmpty())
+            if (file.exists()) {
+                file.delete()
+            } else {
+                false
+            }
+        }.getOrNull() == true
+    }
 }
