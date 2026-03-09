@@ -30,7 +30,8 @@ object FileUtils {
     const val pptRe = "ppt$"
     const val pptxRe = "pptx$"
     const val htmlRe = "(?:html|htm)$"
-    const val csvRe = "(csv|rtf)$"
+    const val csvRe = "csv$"
+    const val rtfRe = "(rtf|rtfs)$"
     val internalCacheDir: File
         get() = File(internalCacheDirPath).apply {
             if (!exists()) {
@@ -110,6 +111,7 @@ object FileUtils {
             pptxRe.toRegex().containsMatchIn(str) -> FileType.PPTX
             htmlRe.toRegex().containsMatchIn(str) -> FileType.HTML
             csvRe.toRegex().containsMatchIn(str) -> FileType.CSV
+            rtfRe.toRegex().containsMatchIn(str) -> FileType.RTF
             else -> FileType.NOT_SUPPORT
         }
     }
@@ -127,6 +129,8 @@ object FileUtils {
             pptRe.toRegex().containsMatchIn(str) -> "ppt"
             pptxRe.toRegex().containsMatchIn(str) -> "pptx"
             htmlRe.toRegex().containsMatchIn(str) -> "html"
+            csvRe.toRegex().containsMatchIn(str) -> "csv"
+            rtfRe.toRegex().containsMatchIn(str) -> "rtf"
             else -> "unknown"
         }
     }

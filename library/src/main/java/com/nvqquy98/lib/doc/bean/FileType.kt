@@ -27,6 +27,7 @@ object FileType {
 
     const val HTML = 11
     const val CSV = 12
+    const val RTF = 13
 
     const val NOT_SUPPORT = 10
 }

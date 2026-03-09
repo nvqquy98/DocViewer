@@ -49,6 +49,7 @@ import com.nvqquy98.lib.doc.util.ViewUtils.show
 import kotlinx.android.synthetic.main.doc_view.view.*
 import timber.log.Timber
 import java.io.File
+import java.net.URL
 import java.net.URLEncoder
 
 /*
@@ -205,7 +206,7 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
             sourceFilePath = null
         }
         if (docSourceType == DocSourceType.URL && fileType != FileType.IMAGE) {
-            if (fileType == FileType.CSV) {
+            if (isOpenGoogleBrowser(docUrl.orEmpty())) {
                 showByWeb(docUrl ?: "", DocEngine.GOOGLE)
             }
             if (engine == DocEngine.MICROSOFT || engine == DocEngine.XDOC || engine == DocEngine.GOOGLE
@@ -284,6 +285,9 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
             }
         }
     }
+
+    fun isOpenGoogleBrowser(url: String): Boolean = FileUtils.getFileTypeForUrl(URL(url).path) == FileType.CSV
+
 
     fun showDoc(
         activity: Activity,
