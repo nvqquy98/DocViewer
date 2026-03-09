@@ -208,6 +208,7 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
         if (docSourceType == DocSourceType.URL && fileType != FileType.IMAGE) {
             if (isOpenGoogleBrowser(docUrl.orEmpty())) {
                 showByWeb(docUrl ?: "", DocEngine.GOOGLE)
+                return
             }
             if (engine == DocEngine.MICROSOFT || engine == DocEngine.XDOC || engine == DocEngine.GOOGLE
             ) {
@@ -286,8 +287,7 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
         }
     }
 
-    fun isOpenGoogleBrowser(url: String): Boolean = FileUtils.getFileTypeForUrl(URL(url).path) == FileType.CSV
-
+    fun isOpenGoogleBrowser(url: String): Boolean = FileUtils.getFileTypeForUrl(URL(url).path).let { it == FileType.CSV || it == FileType.RTF }
 
     fun showDoc(
         activity: Activity,

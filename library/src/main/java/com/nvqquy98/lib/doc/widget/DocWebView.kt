@@ -45,17 +45,11 @@ class DocWebView : ConstraintLayout, DownloadListener {
         LayoutInflater.from(context).inflate(R.layout.doc_web_view, this, true)
         mDocView.webChromeClient = DocWebChromeClient()
         mDocView.webViewClient = DocWebViewClient()
-        //设置可以支持缩放
         mDocView.settings.setSupportZoom(true)
-        //设置出现缩放工具
         mDocView.settings.builtInZoomControls = true
-        //设定缩放控件隐藏
         mDocView.settings.displayZoomControls = true
-        //设置可在大视野范围内上下左右拖动，并且可以任意比例缩放
         mDocView.settings.useWideViewPort = true
-        //设置默认加载的可视范围是大视野范围
         mDocView.settings.loadWithOverviewMode = true
-        //自适应屏幕 SINGLE_COLUMN：把所有内容放大到webview等宽的一列中 NORMAL：正常显示不做任何渲染。NARROW_COLUMNS：可能的话让所有列的宽度不超过屏幕宽度
         mDocView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
 
         mDocView.settings.javaScriptEnabled = true
@@ -72,12 +66,9 @@ class DocWebView : ConstraintLayout, DownloadListener {
         mOnWebLoadListener?.OnWebLoadProgress(newProgress)
     }
 
-    /**
-     * 千万不要更改这个 "SSDJsBirdge"  注意！！！！！
-     */
     @SuppressLint("JavascriptInterface")
     fun addJavascriptInterface(jsInterface: Any) {
-        mDocView.addJavascriptInterface(jsInterface, "SSDJsBirdge")
+//        mDocView.addJavascriptInterface(jsInterface, "SSDJsBirdge")
     }
 
     fun reload() {
@@ -105,25 +96,17 @@ class DocWebView : ConstraintLayout, DownloadListener {
 
     fun downloadFile(url: String?, contentDisposition: String?, mimeType: String?) {
         val request = DownloadManager.Request(Uri.parse(url))
-        // 允许媒体扫描，根据下载的文件类型被加入相册、音乐等媒体库
         request.allowScanningByMediaScanner()
-        // 设置通知的显示类型，下载进行时和完成后显示通知
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-        // 设置通知栏的标题，如果不设置，默认使用文件名
-        request.setTitle("下载完成")
-        // 设置通知栏的描述
+        request.setTitle("Completed")
 //                    request.setDescription("This is description");
-        // 允许在计费流量下下载
         request.setAllowedOverMetered(true)
-        // 允许该记录在下载管理界面可见
         request.setVisibleInDownloadsUi(true)
-        // 允许漫游时下载
         request.setAllowedOverRoaming(true)
         val fileName = URLUtil.guessFileName(url, contentDisposition, mimeType)
         Timber.e("downloadFile()-fileName = $fileName")
         request.setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory().toString() + "/Download/", fileName)
         val downloadManager = mDocView.context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        // 添加一个下载任务
         val downloadId = downloadManager.enqueue(request)
     }
 
@@ -175,7 +158,6 @@ class DocWebView : ConstraintLayout, DownloadListener {
 
     fun setWebViewBackgroundColor(isBlack: Boolean) {
         if (isBlack) {
-            //防止加载html白屏(针对播放视频)
             setBackgroundColor(Color.BLACK)
         }
     }
@@ -203,7 +185,6 @@ class DocWebView : ConstraintLayout, DownloadListener {
     private inner class DocWebViewClient : WebViewClient() {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
-            //在访问失败的时候会首先回调onReceivedError，然后再回调onPageFinished。
             if (!isError) {
                 isLastLoadSuccess = true
                 mOnWebLoadListener?.OnWebLoadProgress(100)
@@ -212,7 +193,6 @@ class DocWebView : ConstraintLayout, DownloadListener {
 
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
             super.onReceivedError(view, request, error)
-            //在访问失败的时候会首先回调onReceivedError，然后再回调onPageFinished。
             isError = true
             if (!isLastLoadSuccess) {//之前成功加载完成过，不会回调
                 mOnWebLoadListener?.OnWebLoadProgress(100)
