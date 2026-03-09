@@ -30,7 +30,7 @@ object FileUtils {
     const val pptRe = "ppt$"
     const val pptxRe = "pptx$"
     const val htmlRe = "(?:html|htm)$"
-    const val csvRe = "csv$"
+    const val csvRe = "(csv|rtf)$"
     val internalCacheDir: File
         get() = File(internalCacheDirPath).apply {
             if (!exists()) {

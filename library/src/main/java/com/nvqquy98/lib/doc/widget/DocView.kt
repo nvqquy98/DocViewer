@@ -75,7 +75,7 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
     private var mMovingOrientation = DocMovingOrientation.HORIZONTAL
     private var setInterceptTouchEventListener: ((MotionEvent?) -> Boolean)? = null
     private var quality = PdfQuality.NORMAL
-    private var engine = DocEngine.INTERNAL
+    private var engine = DocEngine.GOOGLE
     private var showDivider = true
     private var showPageNum = true
     private var divider: Drawable? = null
