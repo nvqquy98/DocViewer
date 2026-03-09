@@ -30,6 +30,7 @@ object FileUtils {
     const val pptRe = "ppt$"
     const val pptxRe = "pptx$"
     const val htmlRe = "(?:html|htm)$"
+    const val csvRe = "csv$"
     val internalCacheDir: File
         get() = File(internalCacheDirPath).apply {
             if (!exists()) {
@@ -108,6 +109,7 @@ object FileUtils {
             pptRe.toRegex().containsMatchIn(str) -> FileType.PPT
             pptxRe.toRegex().containsMatchIn(str) -> FileType.PPTX
             htmlRe.toRegex().containsMatchIn(str) -> FileType.HTML
+            csvRe.toRegex().containsMatchIn(str) -> FileType.CSV
             else -> FileType.NOT_SUPPORT
         }
     }

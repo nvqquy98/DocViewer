@@ -205,6 +205,9 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
             sourceFilePath = null
         }
         if (docSourceType == DocSourceType.URL && fileType != FileType.IMAGE) {
+            if (fileType == FileType.CSV) {
+                showByWeb(docUrl ?: "", DocEngine.GOOGLE)
+            }
             if (engine == DocEngine.MICROSOFT || engine == DocEngine.XDOC || engine == DocEngine.GOOGLE
             ) {
                 showByWeb(docUrl ?: "", engine)

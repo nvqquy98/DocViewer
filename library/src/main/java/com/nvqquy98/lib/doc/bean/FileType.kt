@@ -26,6 +26,7 @@ object FileType {
     const val PPTX = 9
 
     const val HTML = 11
+    const val CSV = 12
 
     const val NOT_SUPPORT = 10
 }
