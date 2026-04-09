@@ -173,12 +173,17 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
         viewPdfInPage: Boolean = false,
         engine: DocEngine = this.engine
     ) {
+        if (docUrl.isNullOrEmpty()) return
         var fileType = fileType
         var docUrl = docUrl
         var docSourceType = docSourceType
         if (docUrl != null && docSourceType == DocSourceType.URI && fileType == -1) {
-            // 如果是URI类型，且文件类型为-1，则获取一下文件类型，保证正确读取
-            val uri = docUrl.toUri()
+            val uri = try {
+                docUrl.toUri()
+            } catch (e: Throwable) {
+                Timber.e(TAG, "parser URI ERROR uri = $docUrl , error : $e")
+                return
+            }
             Timber.d(TAG, "openDoc reset uri = $uri")
             val file = UriUtils.uri2File(uri)
             if (file != null) {
