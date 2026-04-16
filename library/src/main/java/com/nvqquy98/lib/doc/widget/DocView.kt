@@ -174,121 +174,125 @@ open class DocView : FrameLayout, OnDownloadListener, OnWebLoadListener, OnPdfIt
         engine: DocEngine = this.engine
     ) {
         if (docUrl.isNullOrEmpty()) return
-        var fileType = fileType
-        var docUrl = docUrl
-        var docSourceType = docSourceType
-        if (docUrl != null && docSourceType == DocSourceType.URI && fileType == -1) {
-            val uri = try {
-                docUrl.toUri()
-            } catch (e: Throwable) {
-                Timber.e(TAG, "parser URI ERROR uri = $docUrl , error : $e")
-                return
-            }
-            Timber.d(TAG, "openDoc reset uri = $uri")
-            val file = UriUtils.uri2File(uri)
-            if (file != null) {
-                var mimeType = ""
-                fileType = FileUtils.getFileTypeForUrl(file.absolutePath)
-                if (fileType == FileType.NOT_SUPPORT) {
-                    mimeType = FileUtils.getFileMimeType(context, uri) ?: "*/*"
-                    fileType = FileUtils.getFileTypeForUrl(FileUtils.mimeExtMap[mimeType] ?: "")
+        runCatching {
+            var fileType = fileType
+            var docUrl = docUrl
+            var docSourceType = docSourceType
+            if (docUrl != null && docSourceType == DocSourceType.URI && fileType == -1) {
+                val uri = try {
+                    docUrl.toUri()
+                } catch (e: Throwable) {
+                    Timber.e(TAG, "parser URI ERROR uri = $docUrl , error : $e")
+                    return
                 }
-                docUrl = file.absolutePath
-                docSourceType = DocSourceType.PATH
-                Timber.d(TAG, "openDoc reset url = $docUrl")
-                Timber.d(TAG, "openDoc reset docSourceType = $docSourceType")
-                Timber.d(TAG, "openDoc reset fileType = $fileType, mimeType = $mimeType")
-            } else {
-                Timber.d(TAG, "file = null")
-            }
-        }
-        Timber.e(TAG, "openDoc()......fileType = $fileType")
-        mActivity = activity
-        mViewPdfInPage = viewPdfInPage
-        if (docSourceType == DocSourceType.PATH) {
-            sourceFilePath = docUrl
-        } else {
-            sourceFilePath = null
-        }
-        if (docSourceType == DocSourceType.URL && fileType != FileType.IMAGE) {
-            if (isOpenGoogleBrowser(docUrl.orEmpty())) {
-                showByWeb(docUrl ?: "", DocEngine.GOOGLE)
-                return
-            }
-            if (engine == DocEngine.MICROSOFT || engine == DocEngine.XDOC || engine == DocEngine.GOOGLE
-            ) {
-                showByWeb(docUrl ?: "", engine)
-                return
-            }
-            downloadFile(docUrl ?: "")
-            return
-        }
-
-        var type = FileUtils.getFileTypeForUrl(docUrl)
-        if (fileType > 0) {
-            type = fileType
-        }
-        when (type) {
-            FileType.HTML -> {
-                Timber.e(TAG, "openDoc()......PDF")
-                mDocWeb.show()
-                mFlDocContainer.hide()
-                mRvPdf.hide()
-                mIvImage.hide()
-                mDocWeb.loadUrl(docUrl.orEmpty())
-            }
-
-            FileType.PDF -> {
-                Timber.e(TAG, "openDoc()......PDF")
-                mDocWeb.hide()
-                mFlDocContainer.hide()
-                mRvPdf.show()
-                mIvImage.hide()
-
-                showPdf(docSourceType, docUrl)
-            }
-
-            FileType.IMAGE -> {
-                if (showPageNum) {
-                    showPageNum = false
-                }
-                Timber.e(TAG, "openDoc()......")
-                mDocWeb.hide()
-                mFlDocContainer.hide()
-                mRvPdf.hide()
-                mIvImage.show()
-                if (docSourceType == DocSourceType.PATH) {
-                    Timber.e(TAG, "openDoc()......PATH")
-                    mIvImage.load(File(docUrl))
+                Timber.d(TAG, "openDoc reset uri = $uri")
+                val file = UriUtils.uri2File(uri)
+                if (file != null) {
+                    var mimeType = ""
+                    fileType = FileUtils.getFileTypeForUrl(file.absolutePath)
+                    if (fileType == FileType.NOT_SUPPORT) {
+                        mimeType = FileUtils.getFileMimeType(context, uri) ?: "*/*"
+                        fileType = FileUtils.getFileTypeForUrl(FileUtils.mimeExtMap[mimeType] ?: "")
+                    }
+                    docUrl = file.absolutePath
+                    docSourceType = DocSourceType.PATH
+                    Timber.d(TAG, "openDoc reset url = $docUrl")
+                    Timber.d(TAG, "openDoc reset docSourceType = $docSourceType")
+                    Timber.d(TAG, "openDoc reset fileType = $fileType, mimeType = $mimeType")
                 } else {
-                    Timber.e(TAG, "openDoc()......URL")
-                    mIvImage.load(docUrl)
+                    Timber.d(TAG, "file = null")
                 }
+            }
+            Timber.e(TAG, "openDoc()......fileType = $fileType")
+            mActivity = activity
+            mViewPdfInPage = viewPdfInPage
+            if (docSourceType == DocSourceType.PATH) {
+                sourceFilePath = docUrl
+            } else {
+                sourceFilePath = null
+            }
+            if (docSourceType == DocSourceType.URL && fileType != FileType.IMAGE) {
+                if (isOpenGoogleBrowser(docUrl.orEmpty())) {
+                    showByWeb(docUrl ?: "", DocEngine.GOOGLE)
+                    return
+                }
+                if (engine == DocEngine.MICROSOFT || engine == DocEngine.XDOC || engine == DocEngine.GOOGLE
+                ) {
+                    showByWeb(docUrl ?: "", engine)
+                    return
+                }
+                downloadFile(docUrl ?: "")
+                return
             }
 
-            FileType.NOT_SUPPORT -> {
-                if (showPageNum) {
-                    showPageNum = false
-                }
-                Timber.e(TAG, "openDoc()......NOT_SUPPORT")
-                mDocWeb.show()
-                mFlDocContainer.hide()
-                mRvPdf.hide()
-                mIvImage.hide()
-                showByWeb(docUrl ?: "", this.engine)
+            var type = FileUtils.getFileTypeForUrl(docUrl)
+            if (fileType > 0) {
+                type = fileType
             }
+            when (type) {
+                FileType.HTML -> {
+                    Timber.e(TAG, "openDoc()......PDF")
+                    mDocWeb.show()
+                    mFlDocContainer.hide()
+                    mRvPdf.hide()
+                    mIvImage.hide()
+                    mDocWeb.loadUrl(docUrl.orEmpty())
+                }
 
-            else -> {
-                Timber.e(TAG, "openDoc()......ELSE")
-                if (showPageNum) {
-                    showPageNum = false
+                FileType.PDF -> {
+                    Timber.e(TAG, "openDoc()......PDF")
+                    mDocWeb.hide()
+                    mFlDocContainer.hide()
+                    mRvPdf.show()
+                    mIvImage.hide()
+
+                    showPdf(docSourceType, docUrl)
                 }
-                mDocWeb.hide()
-                mFlDocContainer.show()
-                mRvPdf.hide()
-                mIvImage.hide()
-                activity?.let { showDoc(it, mFlDocContainer, docUrl, docSourceType, fileType) }
+
+                FileType.IMAGE -> {
+                    if (showPageNum) {
+                        showPageNum = false
+                    }
+                    Timber.e(TAG, "openDoc()......")
+                    mDocWeb.hide()
+                    mFlDocContainer.hide()
+                    mRvPdf.hide()
+                    mIvImage.show()
+                    if (docSourceType == DocSourceType.PATH) {
+                        Timber.e(TAG, "openDoc()......PATH")
+                        mIvImage.load(File(docUrl))
+                    } else {
+                        Timber.e(TAG, "openDoc()......URL")
+                        mIvImage.load(docUrl)
+                    }
+                }
+
+                FileType.NOT_SUPPORT -> {
+                    if (showPageNum) {
+                        showPageNum = false
+                    }
+                    Timber.e(TAG, "openDoc()......NOT_SUPPORT")
+                    mDocWeb.show()
+                    mFlDocContainer.hide()
+                    mRvPdf.hide()
+                    mIvImage.hide()
+                    showByWeb(docUrl ?: "", this.engine)
+                }
+
+                else -> {
+                    Timber.e(TAG, "openDoc()......ELSE")
+                    if (showPageNum) {
+                        showPageNum = false
+                    }
+                    mDocWeb.hide()
+                    mFlDocContainer.show()
+                    mRvPdf.hide()
+                    mIvImage.hide()
+                    activity?.let { showDoc(it, mFlDocContainer, docUrl, docSourceType, fileType) }
+                }
             }
+        }.getOrElse {
+            Timber.e(TAG, "load Doc Error : $it")
         }
     }
 
