@@ -14,6 +14,8 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.min
+import androidx.core.graphics.createBitmap
+import kotlinx.coroutines.runBlocking
 
 /*
  * -----------------------------------------------------------------
@@ -26,14 +28,13 @@ import kotlin.math.min
  * -----------------------------------------------------------------
  */
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 internal class PdfRendererCore(
     private val context: Context,
     pdfFile: File,
     private val pdfQuality: PdfQuality
 ) {
     companion object {
-        var  pdfRenderer: PdfRenderer? = null
+        var pdfRenderer: PdfRenderer? = null
         private const val PREFETCH_COUNT = 3
     }
 
@@ -52,7 +53,7 @@ internal class PdfRendererCore(
         cache.mkdirs()
     }
 
-    private fun getBitmapFromCache(pageNo: Int,quality: PdfQuality? = pdfQuality): Bitmap? {
+    private fun getBitmapFromCache(pageNo: Int, quality: PdfQuality? = pdfQuality): Bitmap? {
         val loadPath = File(File(context.cacheDir, cachePath), "$quality-$pageNo")
         if (!loadPath.exists())
             return null
@@ -63,7 +64,8 @@ internal class PdfRendererCore(
             null
         }
     }
-    fun pageExistInCache(pageNo: Int,quality: PdfQuality? = pdfQuality): Boolean {
+
+    fun pageExistInCache(pageNo: Int, quality: PdfQuality? = pdfQuality): Boolean {
         val loadPath = File(File(context.cacheDir, cachePath), "$quality-$pageNo")
         return loadPath.exists()
     }
@@ -107,47 +109,45 @@ internal class PdfRendererCore(
             return
 
         try {
-            CoroutineScope(Dispatchers.IO).launch {
+            val job = CoroutineScope(Dispatchers.IO).launch {
                 synchronized(this@PdfRendererCore) {
-                    buildBitmap(pageNo,quality) { bitmap ->
+                    buildBitmap(pageNo, quality) { bitmap ->
                         CoroutineScope(Dispatchers.Main).launch { onBitmapReady?.invoke(bitmap, pageNo) }
                     }
                     onBitmapReady?.let {
-                        prefetchNext(pageNo + 1,quality)
+                        prefetchNext(pageNo + 1, quality)
                     }
                 }
+            }
+            job.invokeOnCompletion {
+                Timber.e("Kill Job")
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun prefetchNext(pageNo: Int,quality: PdfQuality? = pdfQuality) {
+    private fun prefetchNext(pageNo: Int, quality: PdfQuality? = pdfQuality) {
         val countForPrefetch = min(getPageCount(), pageNo + PREFETCH_COUNT)
         for (pageToPrefetch in pageNo until countForPrefetch) {
-            renderPage(pageToPrefetch,quality)
+            renderPage(pageToPrefetch, quality)
         }
     }
 
-    private fun buildBitmap(pageNo: Int, quality: PdfQuality? = pdfQuality, onBitmap: (Bitmap?) -> Unit) {
-        var bitmap = getBitmapFromCache(pageNo,quality)
+    private fun buildBitmap(pageNo: Int, quality: PdfQuality? = pdfQuality, onBitmap: (Bitmap?) -> Unit) = runBlocking {
+        var bitmap = getBitmapFromCache(pageNo, quality)
         bitmap?.let {
             onBitmap(it)
-            return@buildBitmap
+            return@runBlocking
         }
 
         try {
             val ratio = quality?.ratio ?: 1
             val pdfPage = pdfRenderer!!.openPage(pageNo)
-            bitmap = Bitmap.createBitmap(
-                pdfPage.width * ratio,
-                pdfPage.height * ratio,
-                Bitmap.Config.ARGB_8888
-            )
-            bitmap ?: return
+            bitmap = createBitmap(pdfPage.width * ratio, pdfPage.height * ratio)
             pdfPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
             pdfPage.close()
-            writeBitmapToCache(pageNo,quality, bitmap)
+            writeBitmapToCache(pageNo, quality, bitmap)
 
             onBitmap(bitmap)
         } catch (e: Exception) {

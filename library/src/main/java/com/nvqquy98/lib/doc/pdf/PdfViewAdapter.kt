@@ -12,12 +12,12 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.LinearInterpolator
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
-import com.nvqquy98.lib.doc.R
+import com.nvqquy98.lib.doc.databinding.ListItemPdfBinding
 import com.nvqquy98.lib.doc.interfaces.OnPdfItemClickListener
 import com.nvqquy98.lib.doc.util.ViewUtils.hide
 import com.nvqquy98.lib.doc.util.ViewUtils.show
-import kotlinx.android.synthetic.main.list_item_pdf.view.*
-import kotlinx.android.synthetic.main.pdf_view_page_loading_layout.view.*
+import androidx.core.graphics.createBitmap
+import com.nvqquy98.lib.doc.GlideApp
 
 /*
  * -----------------------------------------------------------------
@@ -35,13 +35,9 @@ internal class PdfViewAdapter(
     private val pageSpacing: Rect,
     private val enableLoadingForPages: Boolean,
     private val listener: OnPdfItemClickListener?
-) :
-    RecyclerView.Adapter<PdfViewAdapter.PdfPageViewHolder>() {
+) : RecyclerView.Adapter<PdfViewAdapter.PdfPageViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PdfPageViewHolder {
-        return PdfPageViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.list_item_pdf,parent,
-                false)
-        )
+        return PdfPageViewHolder(ListItemPdfBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     override fun getItemCount(): Int {
@@ -57,63 +53,65 @@ internal class PdfViewAdapter(
         holder.bindView()
     }
 
-    inner class PdfPageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),View.OnAttachStateChangeListener {
-
+    inner class PdfPageViewHolder(private val binding: ListItemPdfBinding) : RecyclerView.ViewHolder(binding.root), View.OnAttachStateChangeListener {
         fun bindView() {
-            itemView.container_view.setOnClickListener {
-                listener?.OnPdfItemClick(adapterPosition)
+        }
+
+        init {
+            binding.containerView.setOnClickListener {
+                listener?.OnPdfItemClick(bindingAdapterPosition)
             }
         }
 
         private fun handleLoadingForPage(position: Int) {
             if (!enableLoadingForPages) {
-                itemView.pdf_view_page_loading_progress.hide()
+                binding.loadingView.root.hide()
                 return
             }
 
             if (renderer?.pageExistInCache(position) == true) {
-                itemView.pdf_view_page_loading_progress.hide()
+                binding.loadingView.root.hide()
             } else {
-                itemView.pdf_view_page_loading_progress.show()
+                binding.loadingView.root.show()
             }
         }
 
         init {
-            itemView.addOnAttachStateChangeListener(this)
+            binding.root.addOnAttachStateChangeListener(this)
         }
 
         override fun onViewAttachedToWindow(p0: View) {
-            handleLoadingForPage(adapterPosition)
-            renderer?.renderPage(adapterPosition) { bitmap: Bitmap?, pageNo: Int ->
-                if (pageNo == adapterPosition) {
+            handleLoadingForPage(bindingAdapterPosition)
+            renderer?.renderPage(bindingAdapterPosition) { bitmap: Bitmap?, pageNo: Int ->
+                if (pageNo == bindingAdapterPosition) {
                     bitmap?.let {
-                        itemView.container_view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        binding.containerView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                             height =
-                                (itemView.container_view.width.toFloat() / ((bitmap.width.toFloat() / bitmap.height.toFloat()))).toInt()
+                                (binding.containerView.width.toFloat() / ((bitmap.width.toFloat() / bitmap.height.toFloat()))).toInt()
                             this.topMargin = pageSpacing.top
                             this.leftMargin = pageSpacing.left
                             this.rightMargin = pageSpacing.right
                             this.bottomMargin = pageSpacing.bottom
                         }
-                        itemView.pageView.setImageBitmap(bitmap)
-                        itemView.pageView.animation = AlphaAnimation(0F, 1F).apply {
+                        GlideApp.with(binding.root.context).load(bitmap).into(binding.pageView)
+                        binding.pageView.animation = AlphaAnimation(0F, 1F).apply {
                             interpolator = LinearInterpolator()
                             duration = 200
                         }
-                        itemView.pdf_view_page_loading_progress.hide()
+                        binding.loadingView.root.hide()
                     }
                 }
             }
         }
 
         override fun onViewDetachedFromWindow(p0: View) {
-            itemView.pageView.setImageBitmap(null)
-            itemView.pageView.clearAnimation()
+            binding.pageView.setImageBitmap(null)
+            binding.pageView.clearAnimation()
         }
     }
 
     fun drawableToBitmap(drawable: Drawable): Bitmap? {
-        val bitmap = Bitmap.createBitmap(
+        val bitmap = createBitmap(
             drawable.intrinsicWidth,
             drawable.intrinsicHeight,
             if (drawable.opacity != PixelFormat.OPAQUE) Bitmap.Config.ARGB_8888 else Bitmap.Config.RGB_565
