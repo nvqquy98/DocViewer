@@ -17,7 +17,6 @@ import com.nvqquy98.lib.doc.interfaces.OnPdfItemClickListener
 import com.nvqquy98.lib.doc.util.ViewUtils.hide
 import com.nvqquy98.lib.doc.util.ViewUtils.show
 import androidx.core.graphics.createBitmap
-import com.bumptech.glide.Glide
 
 /*
  * -----------------------------------------------------------------
@@ -93,7 +92,7 @@ internal class PdfViewAdapter(
                             this.rightMargin = pageSpacing.right
                             this.bottomMargin = pageSpacing.bottom
                         }
-                        Glide.with(binding.root.context).load(bitmap).into(binding.pageView)
+                        binding.pageView.setImageBitmap(bitmap)
                         binding.pageView.animation = AlphaAnimation(0F, 1F).apply {
                             interpolator = LinearInterpolator()
                             duration = 200

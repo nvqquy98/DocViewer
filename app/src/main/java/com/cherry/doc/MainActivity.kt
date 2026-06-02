@@ -26,8 +26,8 @@ import com.cherry.permissions.lib.EasyPermissions
 import com.cherry.permissions.lib.EasyPermissions.hasPermissions
 import com.cherry.permissions.lib.annotations.AfterPermissionGranted
 import com.cherry.permissions.lib.dialogs.SettingsDialog
-import com.cherry.doc.R
 import com.cherry.doc.databinding.ActivityMainBinding
+import com.nvqquy98.lib.doc.DocViewerLib
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,8 +53,8 @@ class MainActivity : AppCompatActivity(), OnClickListener, OnItemClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        DocViewerLib.initPdfBox(applicationContext)
         setContentView(binding.root)
-
         initView()
         initData()
     }

@@ -60,10 +60,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.9.4"
     implementation "androidx.lifecycle:lifecycle-common:2.9.4"
 
-    implementation("io.coil-kt:coil:1.4.0")
+    implementation 'com.tom-roush:pdfbox-android:2.0.27.0'
 
-    // Glide dependencies
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    implementation("io.coil-kt:coil:1.4.0")
 
     implementation 'org.apache.poi:poi-scratchpad:5.5.1'
     // read file
@@ -81,7 +80,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.nvqquy98'
                 artifactId = 'nvqquy98'
-                version = '1.0.2'
+                version = '1.0.3'
             }
         }
     }

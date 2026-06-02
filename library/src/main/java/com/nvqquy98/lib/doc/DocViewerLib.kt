@@ -1,5 +1,7 @@
 package com.nvqquy98.lib.doc
 
+import android.content.Context
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import timber.log.Timber
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSocketFactory
@@ -7,6 +9,10 @@ import javax.net.ssl.SSLSocketFactory
 object DocViewerLib {
     internal var sslSocketFactory: SSLSocketFactory? = null
     internal var hostnameVerifier: HostnameVerifier? = null
+
+    fun initPdfBox(applicationContext: Context) {
+        PDFBoxResourceLoader.init(applicationContext)
+    }
 
     fun initTimber() {
         if (BuildConfig.DEBUG) {

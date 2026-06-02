@@ -1,21 +1,20 @@
 package com.nvqquy98.lib.doc.pdf
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.pdf.PdfRenderer
-import android.os.Build
 import android.os.ParcelFileDescriptor
+import androidx.core.graphics.createBitmap
+import com.tom_roush.pdfbox.pdmodel.PDDocument
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.min
-import androidx.core.graphics.createBitmap
-import kotlinx.coroutines.runBlocking
 
 /*
  * -----------------------------------------------------------------
@@ -75,7 +74,7 @@ internal class PdfRendererCore(
             val savePath = File(File(context.cacheDir, cachePath), "$quality-$pageNo")
             savePath.createNewFile()
             val fos = FileOutputStream(savePath)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
             fos.flush()
             fos.close()
         } catch (e: Exception) {
@@ -85,8 +84,12 @@ internal class PdfRendererCore(
 
     private fun openPdfFile(pdfFile: File) {
         try {
-            val fileDescriptor =
-                ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
+            val pdfDocument = PDDocument.load(pdfFile)
+            val acroForm = pdfDocument?.documentCatalog?.acroForm
+            acroForm?.flatten()
+            pdfDocument?.save(pdfFile)
+            pdfDocument?.close()
+            val fileDescriptor = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
             pdfRenderer = PdfRenderer(fileDescriptor)
         } catch (e: Exception) {
             e.printStackTrace()
