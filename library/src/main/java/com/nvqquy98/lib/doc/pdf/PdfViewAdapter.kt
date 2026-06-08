@@ -93,7 +93,6 @@ internal class PdfViewAdapter(
                             this.rightMargin = pageSpacing.right
                             this.bottomMargin = pageSpacing.bottom
                         }
-                        binding.pageView.setBackgroundColor(Color.WHITE)
                         binding.pageView.setImageBitmap(bitmap)
                         binding.pageView.animation = AlphaAnimation(0F, 1F).apply {
                             interpolator = LinearInterpolator()
