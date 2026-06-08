@@ -74,7 +74,7 @@ internal class PdfRendererCore(
             val savePath = File(File(context.cacheDir, cachePath), "$quality-$pageNo")
             savePath.createNewFile()
             val fos = FileOutputStream(savePath)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
             fos.flush()
             fos.close()
         } catch (e: Exception) {

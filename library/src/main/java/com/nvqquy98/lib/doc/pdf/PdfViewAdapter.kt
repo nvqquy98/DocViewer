@@ -2,6 +2,7 @@ package com.nvqquy98.lib.doc.pdf
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
@@ -92,6 +93,7 @@ internal class PdfViewAdapter(
                             this.rightMargin = pageSpacing.right
                             this.bottomMargin = pageSpacing.bottom
                         }
+                        binding.pageView.setBackgroundColor(Color.WHITE)
                         binding.pageView.setImageBitmap(bitmap)
                         binding.pageView.animation = AlphaAnimation(0F, 1F).apply {
                             interpolator = LinearInterpolator()
